@@ -2,6 +2,7 @@ import TWEEN from '@tweenjs/tween.js'
 import Rectangle from './Rectangle'
 import TNode from "./TNode";
 import Component from "./Component";
+import ProgressCircle from './ProgressCircle';
 
 const randBetween = (n: number, m: number) => n + Math.floor((m - n) * Math.random());
 
@@ -13,17 +14,27 @@ const generateRectangle = () : Rectangle => {
         (rectange: Rectangle) => {
 
             new TWEEN.Tween(rectange).to({ width: (randBetween(40, 200)) }, 1000).start();
-            // rectange.width = (randBetween(40, 200));
-            // rectange.height = (randBetween(30, 50));
+        }        
+    );
+
+    return r;
+}       
+
+const generateProgCircle = () : ProgressCircle => {
+    const r = new ProgressCircle(randBetween(20, 50), Math.random());
+    
+    r.onClick.subscribe(
+        (pCircle: ProgressCircle) => {
+
+            new TWEEN.Tween(pCircle).to({ progress: (Math.random()) }, 1000).start();
         }        
     );
 
     return r;
 }        
 
-
 export default class TreeGenerator {
-    private static generators: Array<Function> = [generateRectangle];
+    private static generators: Array<Function> = [generateRectangle, generateProgCircle];
 
     public static generateTree(depth: number) : TNode {
         const root : TNode = new TNode(this.generateRandomComponent());
@@ -41,7 +52,7 @@ export default class TreeGenerator {
     }
     
     private static generateRandomComponent() : Component {
-        return this.generators[randBetween(0, this.generators.length - 1)]();
+        return this.generators[randBetween(0, this.generators.length)]();
     }
     
 }
