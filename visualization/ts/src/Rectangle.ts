@@ -103,17 +103,16 @@ export default class Rectangle extends Component {
     }
     
     draw (context: CanvasRenderingContext2D): void {
+        this._connectors.forEach(connector => connector.draw(context));
+        
         context.strokeRect(this.position.x + 0.5, this.position.y + 0.5, this.width, this.height);
     }
     
     isInPath (context: CanvasRenderingContext2D, p: Point): boolean {
-        //context.save();
         if (context.isPointInPath(this._path, p.x, p.y)){
             this._onClick.dispatch(this);
-            //context.restore();
             return true;
         }
-        //context.restore();
-        return false;        
+        return false;
     }
 }

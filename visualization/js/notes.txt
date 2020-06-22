@@ -1,5 +1,0 @@
-Canvas optimalization:
-    - collect objects with same line/fill color 
-    - quadtree (branches of the tree could be cut off?)
-    - https://developer.mozilla.org/en-US/docs/Games/Techniques/Efficient_animation_for_web_games
-    A következő meglátások/kérdések merültek fel bennem:hit testelés valóban az isPointInPath fv. használható, ezt a quadtree biztos segíteni fogjaolvastam róla, hogy a fillStyle és strokeStyle hívások csökkentésével gyorsítható a rajzolás, ehhez valamilyen okos rajzoló eljárásra lesz szükség

@@ -97,14 +97,6 @@ export default class DrawingManager {
         this._root.traverse( 
             (obj : Component) : boolean => obj.isInPath(this._context, wordCoords)
         );
-
-        // this._root.traverse( 
-        //     (obj : TNode) => obj.isInPath(this.context, wordCoords.x, wordCoords.y, 
-        //     (rect) => {
-        //         new TWEEN.Tween(obj)
-        //         .to({ width: obj.width + 100 }, 1000)
-        //         .start();}
-        //     ));
     }
 
     addListeners() {       

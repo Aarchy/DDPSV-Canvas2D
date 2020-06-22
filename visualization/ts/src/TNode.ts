@@ -20,6 +20,8 @@ export default class TNode {
         child.parent = this;
         
         this.children = [...this.children, child];
+
+        this.component.connectTo(child.component);
     }
     
     getLayout () : any {
