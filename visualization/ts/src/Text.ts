@@ -2,13 +2,15 @@ import Point from './Point';
 import { EventDispatcher, IEvent } from "../node_modules/strongly-typed-events/dist/index";
 import Component from './Component';
 
-export default class Rectangle extends Component {     
-    private _onClick : EventDispatcher<Rectangle> = new EventDispatcher<Rectangle>();
+export default class Text extends Component {     
+    private _onClick : EventDispatcher<Text> = new EventDispatcher<Text>();
 
     private _position: Point = {x:0, y:0};
-    private _width: number;
-    private _height: number;
     private _path: Path2D;
+    private _string: string;
+    private _metrics: TextMetrics;
+    private _height: number;
+
     private _boundingBox: {
         left: number,
         top: number,
@@ -16,19 +18,21 @@ export default class Rectangle extends Component {
         height: number 
     };
 
-    constructor (width: number, height: number) {     
+    constructor (str : string, context: CanvasRenderingContext2D) {     
         super();
         
-        this._width      = width;  
-        this._height     = height; 
+        this._string = str;
+
+        this._metrics = context.measureText(str);
+        this._height =  (this._metrics.actualBoundingBoxAscent + this._metrics.actualBoundingBoxDescent)
         this._boundingBox = {
             left: this.position.x,
-            top: this.position.y,
-            width: this.width,
-            height: this.height
+            top: this.position.y - this._height,
+            width: this._metrics.width,
+            height: this._height
         };
         this._path = new Path2D;
-        this._path.rect(this.position.x, this.position.y, this.width, this.height);
+        this._path.rect(this._boundingBox.left, this._boundingBox.top, this._boundingBox.width, this._boundingBox.height);
     }   
     
 
@@ -51,28 +55,10 @@ export default class Rectangle extends Component {
     }
 
     get top(): number {
-        return this.position.y;
+        return this.position.y - this._height;
     }
     set top(value: number) {
-        this.position.y = value;
-        this.updateBoundingBox();
-        this.updatePath();
-    }
-
-    get height(): number {
-        return this._height;
-    }
-    set height(value: number) {
-        this._height = value;
-        this.updateBoundingBox();
-        this.updatePath();
-    }
-
-    get width(): number {
-        return this._width;
-    }
-    set width(value: number) {
-        this._width = value;
+        this.position.y = value + this._height;
         this.updateBoundingBox();
         this.updatePath();
     }
@@ -86,26 +72,24 @@ export default class Rectangle extends Component {
         return this._boundingBox;
     }
 
-    get onClick(): IEvent<Rectangle> {
+    get onClick(): IEvent<Text> {
         return this._onClick.asEvent();
     }
     
     updatePath (): void {
         this._path = new Path2D;
-        this._path.rect(this.position.x, this.position.y, this.width, this.height);
+        this._path.rect(this._boundingBox.left, this._boundingBox.top, this._boundingBox.width, this._boundingBox.height);
     }
     
     updateBoundingBox(): void {
         this._boundingBox.left = this.position.x;
-        this._boundingBox.top = this.position.y;
-        this._boundingBox.width = this.width;
-        this._boundingBox.height = this.height;
+        this._boundingBox.top = this.position.y - this._height;
     }
     
     draw (context: CanvasRenderingContext2D): void {
         this._connectors.forEach(connector => connector.draw(context));
         
-        context.strokeRect(this.position.x + 0.5, this.position.y + 0.5, this.width, this.height);
+        context.fillText(this._string, this.position.x, this.position.y);
     }
     
     isInPath (context: CanvasRenderingContext2D, p: Point): boolean {

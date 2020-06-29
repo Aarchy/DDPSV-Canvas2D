@@ -5,7 +5,7 @@ export default class TNode {
     private component: Component;
     private parent: TNode | null = null;
     private children: Array<TNode> = [];
-    private static margin: {x: number, y: number} = {x: 150, y: 20}; 
+    private static margin: {x: number, y: number} = {x: 150, y: 50}; 
     
     constructor (component: Component) {
         this.component = component;
@@ -37,7 +37,7 @@ export default class TNode {
     }
     
     setLayout (layout : any) : any {
-        new TWEEN.Tween(this.component).to({ x: layout.x, y: layout.y }, 1000).start();
+        new TWEEN.Tween(this.component).to({ left: layout.x, top: layout.y }, 1000).start();
 
         //this.component.position = {x: layout.x, y: layout.y};      
           

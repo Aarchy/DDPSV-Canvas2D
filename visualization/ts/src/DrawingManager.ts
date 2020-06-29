@@ -20,6 +20,8 @@ export default class DrawingManager {
         this._canvas.width = window.innerWidth;
         this._canvas.height = window.innerHeight;
         this._context = this._canvas.getContext("2d")!;
+        this._context.font = '24px Arial';
+
         this._camera = new Camera(this._context);
         this._layoutCounter = 0;
         // const tree = new TNode(new Rectangle(100, 100));
@@ -27,7 +29,7 @@ export default class DrawingManager {
         // const tree2 = new TNode(new Rectangle(25, 50));
         // tree.addChild(tree2);
         // tree2.addChild(new TNode(new Rectangle(50, 50)));
-        this._root = TreeGenerator.generateTree(4);
+        this._root = TreeGenerator.generateTree(4, this._context);
         this._isLayoutHorizontal = true;
         this.addListeners();
     }      
