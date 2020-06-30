@@ -20,7 +20,7 @@ export default abstract class Component {
             this._parent.removeComponent(this);
         }
         if(newParent){
-            newParent!.addComponent(this);
+            newParent!.addComponent(this, 0, 0);
         }
         this._parent = newParent;    
     }
@@ -40,4 +40,6 @@ export default abstract class Component {
         
     abstract isInPath(context: CanvasRenderingContext2D, p: Point): boolean;
     abstract draw (context: CanvasRenderingContext2D): void;
+    abstract manageClick (context: CanvasRenderingContext2D, p: Point): void;
+
 }

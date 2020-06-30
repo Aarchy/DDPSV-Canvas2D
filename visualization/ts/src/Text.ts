@@ -18,11 +18,11 @@ export default class Text extends Component {
         height: number 
     };
 
-    constructor (str : string, context: CanvasRenderingContext2D) {     
+    constructor (str : string, position: Point, context: CanvasRenderingContext2D) {     
         super();
         
         this._string = str;
-
+        this._position = position;
         this._metrics = context.measureText(str);
         this._height =  (this._metrics.actualBoundingBoxAscent + this._metrics.actualBoundingBoxDescent)
         this._boundingBox = {
@@ -98,5 +98,11 @@ export default class Text extends Component {
             return true;
         }
         return false;
+    }
+
+    manageClick (context: CanvasRenderingContext2D, p: Point): void {
+        if (context.isPointInPath(this._path, p.x, p.y)){
+            this._onClick.dispatch(this);
+        }
     }
 }

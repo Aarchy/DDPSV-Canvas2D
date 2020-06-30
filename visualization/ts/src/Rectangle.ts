@@ -16,9 +16,13 @@ export default class Rectangle extends Component {
         height: number 
     };
 
-    constructor (width: number, height: number) {     
+    constructor (width: number, height: number, position: Point | null = null) {     
         super();
         
+        if (position) {
+            this._position = position;
+        }
+
         this._width      = width;  
         this._height     = height; 
         this._boundingBox = {
@@ -114,5 +118,11 @@ export default class Rectangle extends Component {
             return true;
         }
         return false;
+    }
+
+    manageClick (context: CanvasRenderingContext2D, p: Point): void {
+        if (context.isPointInPath(this._path, p.x, p.y)){
+            this._onClick.dispatch(this);
+        }
     }
 }

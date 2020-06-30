@@ -5,7 +5,7 @@ export default class TNode {
     private component: Component;
     private parent: TNode | null = null;
     private children: Array<TNode> = [];
-    private static margin: {x: number, y: number} = {x: 150, y: 50}; 
+    private static margin: {x: number, y: number} = {x: 100, y: 50}; 
     
     constructor (component: Component) {
         this.component = component;
