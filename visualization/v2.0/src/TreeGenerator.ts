@@ -48,7 +48,11 @@ export default class TreeGenerator {
         const root : Component = this.generateRandomComponent();
 
         if(depth > 0){
-            const children = [...Array(randBetween(3, 4))].map(
+            let childNum = randBetween(1, 3);
+            if(randBetween(1, 10) > 8){
+                ++childNum;
+            }
+            const children = [...Array(childNum)].map(
                 () => TreeGenerator.generateTree(depth - 1)
             )
             children.forEach(c => {
