@@ -3,13 +3,15 @@ import TWEEN from '@tweenjs/tween.js'
 import { EventDispatcher, IEvent } from "../node_modules/strongly-typed-events/dist/index";
 import Camera from './Camera';
 import BoundingBox from './BoundingBox';
+import Connector from './Connector';
 
 export default abstract class Component {
     private static margin: {x: number, y: number} = {x: 50, y: 50}; 
     
     private parent: Component | null = null;
     private children: Array<Component> = [];
-    
+    protected _connectors: Array<Connector> = [];
+
     abstract left: number;
     abstract top: number;
     abstract boundingBox: BoundingBox;
@@ -27,6 +29,7 @@ export default abstract class Component {
             this.drawThis(context, camera.distance > 1000);
             context.restore();
         }
+        this._connectors.forEach(connector => connector.draw(context));
 
         this.children.forEach( child => {
             child.draw(context, camera);
@@ -35,6 +38,7 @@ export default abstract class Component {
     
     addChild (newChild: Component) : void {
         this.children.push(newChild);
+        this._connectors.push(new Connector(this, newChild));
         newChild.parent = this;
     }
     
