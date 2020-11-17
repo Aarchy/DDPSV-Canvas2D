@@ -20,6 +20,8 @@ export default class DrawingManager {
         this._canvas.width = window.innerWidth;
         this._canvas.height = window.innerHeight;
         this._context = this._canvas.getContext("2d")!;
+        this._context.font = '24px Arial';
+
         this._camera = new Camera(this._context);
         this._layoutCounter = 0;
         // const tree = new TNode(new Rectangle(100, 100));
@@ -27,7 +29,7 @@ export default class DrawingManager {
         // const tree2 = new TNode(new Rectangle(25, 50));
         // tree.addChild(tree2);
         // tree2.addChild(new TNode(new Rectangle(50, 50)));
-        this._root = TreeGenerator.generateTree(4);
+        this._root = TreeGenerator.generateTree(6, this._context);
         this._isLayoutHorizontal = true;
         this.addListeners();
     }      
@@ -41,11 +43,32 @@ export default class DrawingManager {
         if (tree.children) {
             tree.children.forEach((child : any) => this.flipLayout(child));
         }
+    }
+
+
+    reflipLayout2(tree : any, rootsize: number){
+        let right = tree.x + tree.size[0];
+        let leftDistance = rootsize - tree.x;
+        let newTop = right - leftDistance;
+        [tree.x, tree.y] = [tree.y, -newTop];
+
+        tree.size.reverse();
+
+        if (tree.children) {
+            tree.children.forEach((child : any) => this.reflipLayout2(child, rootsize));
+        }
+    }
+
+    reflipLayout(tree : any) {
         [tree.x, tree.y] = [tree.y, tree.x];
+        if (tree.children) {
+            tree.children.forEach((child : any) => this.reflipLayout2(child, tree.size[0]));
+        }
+        tree.size.reverse();
     }
 
     updateLayout(){
-        const flextreeLayout = flextree({ spacing: 10});
+        const flextreeLayout = flextree({ spacing: 3});
 
         const rootLayout = this._root.getLayout(); 
 
@@ -53,7 +76,7 @@ export default class DrawingManager {
         const tree = flextreeLayout.hierarchy(rootLayout);
         flextreeLayout(tree);
         //console.log(flextreeLayout.dump(tree));
-        if (this._isLayoutHorizontal) { this.flipLayout(tree); }           
+        if (this._isLayoutHorizontal) { this.reflipLayout(tree); }           
     
         this._root.setLayout(tree);
     }
@@ -92,10 +115,10 @@ export default class DrawingManager {
 
     manageClick(e: MouseEvent) {
         const wordCoords : Point = this._camera.screenToWorld({x: e.offsetX, y: e.offsetY});
-        console.log('wordcoords: ');
-        console.log(wordCoords);
+        //console.log('wordcoords: ');
+       // console.log(wordCoords);
         this._root.traverse( 
-            (obj : Component) : boolean => obj.isInPath(this._context, wordCoords)
+            (obj : Component) : void => obj.manageClick(this._context, wordCoords)
         );
     }
 

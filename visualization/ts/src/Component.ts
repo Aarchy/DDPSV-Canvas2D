@@ -1,16 +1,30 @@
 import Point from './Point'
 import { IEvent  } from "../node_modules/strongly-typed-events/dist/index";
 import Connector from './Connector';
+import FixContainer from './FixContainer';
 
 export default abstract class Component {
-    protected _innerComponents: Array<Component> = [];
-    protected _parent: Component | null = null;
+    protected _parent: FixContainer | null = null;
     
     protected _connectors: Array<Connector> = [];
 
-    abstract position: Point;
-    abstract x: number;
-    abstract y: number;
+    abstract position: Point;  
+    abstract left: Number;
+    abstract top: Number;
+
+    get parent(): FixContainer | null {
+        return this._parent;
+    }
+    set parent(newParent: FixContainer | null){
+        if (this._parent){
+            this._parent.removeComponent(this);
+        }
+        if(newParent){
+            newParent!.addComponent(this, 0, 0);
+        }
+        this._parent = newParent;    
+    }
+
     abstract boundingBox: {
         left: number,
         top: number,
@@ -18,19 +32,14 @@ export default abstract class Component {
         height: number
     };
 
-    abstract onClick: IEvent<Component>;
-    
-    addComponent (child: Component): void {
-        child._parent = this;
-        
-        this._innerComponents = [...this._innerComponents, child];
-    }
+    abstract onClick: IEvent<Component>;    
 
     connectTo (component: Component): void {
         this._connectors = [...this._connectors, new Connector(this, component)];
     }
-    
-    abstract draw (context: CanvasRenderingContext2D): void;
-    
+        
     abstract isInPath(context: CanvasRenderingContext2D, p: Point): boolean;
+    abstract draw (context: CanvasRenderingContext2D): void;
+    abstract manageClick (context: CanvasRenderingContext2D, p: Point): void;
+
 }

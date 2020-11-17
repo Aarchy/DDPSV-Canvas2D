@@ -42,24 +42,23 @@ export default class ProgressCircle extends Component {
         this.updatePath();
     }
 
-    get x(): number {
-        return this._position.x;
+    get left(): number {
+        return this.position.x - this._radius;;
     }
-    set x(value: number) {
-        this._position.x = value;
+    set left(value: number) {
+        this.position.x = value + this._radius;
         this.updateBoundingBox();
         this.updatePath();
     }
 
-    get y(): number {
-        return this._position.y;
+    get top(): number {
+        return this.position.y - this._radius;
     }
-    set y(value: number) {
-        this._position.y = value;
+    set top(value: number) {
+        this.position.y = value + this._radius;
         this.updateBoundingBox();
         this.updatePath();
     }
-
     get radius(): number {
         return this._radius;
     }
@@ -133,9 +132,14 @@ export default class ProgressCircle extends Component {
     
     isInPath (context: CanvasRenderingContext2D, p: Point): boolean {
         if (context.isPointInPath(this._path, p.x, p.y)){
-            this._onClick.dispatch(this);
             return true;
         }
         return false;
+    }
+
+    manageClick (context: CanvasRenderingContext2D, p: Point): void {
+        if (context.isPointInPath(this._path, p.x, p.y)){
+            this._onClick.dispatch(this);
+        }
     }
 }
