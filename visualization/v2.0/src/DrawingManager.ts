@@ -77,7 +77,7 @@ export default class DrawingManager {
         if (tree.children) {
             tree.children.forEach((child : any) => this.flipLayout(child));
         }
-        [tree.x, tree.y] = [tree.y, tree.x];
+        [tree.x, tree.y] = [tree.y, tree.x - tree.xSize / 2];
     }
     
     updateLayout() {
@@ -96,7 +96,7 @@ export default class DrawingManager {
     }
 
     update() {
-        if (this._layoutCounter === 60000) {
+        if (this._layoutCounter === 60) {
             this.updateLayout();
             this._layoutCounter = 0;
         }

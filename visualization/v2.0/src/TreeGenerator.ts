@@ -1,9 +1,17 @@
 import TWEEN from '@tweenjs/tween.js'
 import Component from './Component';
+import DetailedNode from './DetailedNode';
 import ProgressCircle from './ProgressCircle';
 import RoundedRectangle from './RoundedRect';
 
 const randBetween = (n: number, m: number) => n + Math.floor((m - n) * Math.random());
+
+const generateDetailedNode = () : DetailedNode => {
+
+    const r = new DetailedNode(200, 200);
+
+    return r;
+}       
 
 
 const generateRoundedRectangle = () : RoundedRectangle => {
@@ -34,7 +42,7 @@ const generateProgCircle = () : ProgressCircle => {
 }        
 
 export default class TreeGenerator {
-    private static generators: Array<Function> = [generateProgCircle, generateRoundedRectangle];
+    private static generators: Array<Function> = [generateProgCircle, generateRoundedRectangle, generateDetailedNode];
 
     public static generateTree(depth: number) : Component {
         const root : Component = this.generateRandomComponent();

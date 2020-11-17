@@ -37,6 +37,9 @@ export default class RoundedRect extends Component {
     }
     set visibleWidth(value: number) {
         this._visibleWidth = value;
+        if (this._origWidth * this._visibleWidth < this.boundingBox.height){
+            this._visibleWidth = this.boundingBox.height / this._origWidth
+        }
         this.updateBoundingBox();
         this.updatePath();
     }
@@ -91,8 +94,8 @@ export default class RoundedRect extends Component {
         let unitWidth : number = this._origWidth / 13;
         let topPos : number = this.boundingBox.height / 3;
         this._stages.forEach((stage,i) => {
-            let left = 0 + ((1 + i * 4) * unitWidth);
-            context.strokeRect(left, 0 + topPos, 3 * unitWidth, topPos);
+            let left = ((1 + i * 4) * unitWidth);
+            context.strokeRect(left, topPos, 3 * unitWidth, topPos);
 
             if (drawSimple) {
                 let stageTextMetrics = context.measureText(stage);
@@ -100,7 +103,7 @@ export default class RoundedRect extends Component {
                 context.fillStyle = 'lightblue';
                 context.fillRect(
                     left + (3 * unitWidth / 5), 
-                    0 + 5 * topPos / 3 - stageTextMetrics.actualBoundingBoxAscent,
+                    5 * topPos / 3 - stageTextMetrics.actualBoundingBoxAscent,
                     stageTextMetrics.width,
                     stageTextMetrics.actualBoundingBoxAscent + stageTextMetrics.actualBoundingBoxDescent
                 );    
@@ -108,7 +111,7 @@ export default class RoundedRect extends Component {
             } else{
                 context.fillText(stage, 
                     left + (3 * unitWidth / 5), 
-                    0 + 5 * topPos / 3
+                    5 * topPos / 3
                 );
             }
         })
@@ -116,18 +119,18 @@ export default class RoundedRect extends Component {
         if(this.visibleWidth < 1.0) {
             let region = new Path2D();
             region.arc(
-                0 + this.boundingBox.width - radius, 
-                0 + radius, 
+                this.boundingBox.width - radius, 
+                radius, 
                 radius,  
                 3 * Math.PI / 2,  Math.PI / 2);    
             region.lineTo(
-                0 + this._origWidth,
-                0 + this.boundingBox.height)
+                this._origWidth,
+                this.boundingBox.height)
             region.lineTo(
-                0 + this._origWidth,
+                this._origWidth,
                 0)
             region.lineTo(
-                0 + this.boundingBox.width - radius,
+                this.boundingBox.width - radius,
                 0)
             region.closePath();
 
@@ -136,9 +139,9 @@ export default class RoundedRect extends Component {
         }
 
         context.beginPath();
-        context.arc(0 + radius, 0 + radius, radius, Math.PI / 2,  3 * Math.PI / 2);
-        context.arc(0 + this.boundingBox.width - radius, 0 + radius, radius,  3 * Math.PI / 2,  Math.PI / 2);
-        context.lineTo(0 + radius, 0 + this.boundingBox.height);
+        context.arc(radius, radius, radius, Math.PI / 2,  3 * Math.PI / 2);
+        context.arc(this.boundingBox.width - radius, radius, radius,  3 * Math.PI / 2,  Math.PI / 2);
+        context.lineTo(radius, this.boundingBox.height);
         context.stroke();
     }
 
