@@ -90,7 +90,7 @@ export default class RoundedRect extends Component {
 
         let radius : number = this.boundingBox.height / 2;
 
-        context.font = '10px serif';
+        context.font = '10px sans-serif';
         let unitWidth : number = this._origWidth / 13;
         let topPos : number = this.boundingBox.height / 3;
         this._stages.forEach((stage,i) => {

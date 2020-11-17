@@ -109,7 +109,7 @@ export default class ProgressCircle extends Component {
         context.arc(this._radius, this._radius, this._radius - 5, 0, this._progress * 2 * Math.PI)
         context.stroke();
 
-        context.font = '10px serif';
+        context.font = '10px sans-serif';
         let _firstTextMetrics = context.measureText(this._firstText);
         let _secondTextMetrics = context.measureText(this._secondText);
         let _thirdTextMetrics = context.measureText(this._thirdText);
