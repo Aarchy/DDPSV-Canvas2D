@@ -1,0 +1,26 @@
+{
+  "name": "ddpsv-canvas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tweenjs/tween.js": "^18.5.0",
+    "d3-flextree": "^2.1.1",
+    "stats.js": "^0.17.0",
+    "typed-web-workers": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/tween.js": "^18.5.0",
+    "strongly-typed-events": "^1.6.11",
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.9.7",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12",
+    "worker-loader": "^3.0.5"
+  }
+}

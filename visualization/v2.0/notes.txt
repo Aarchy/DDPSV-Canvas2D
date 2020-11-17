@@ -1,0 +1,6 @@
+webworker flextree
+placeholder kirajzolas (hurkak merete)
+detail node
+connectorok
+
+shared memory buffer 
