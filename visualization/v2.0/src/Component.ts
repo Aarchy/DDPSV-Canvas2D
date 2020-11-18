@@ -57,12 +57,12 @@ export default abstract class Component {
     setLayout (layout : any) : void {
         if (this.left != layout.x || this.top != layout.y){
             new TWEEN.Tween(this).to({ left: layout.x, top: layout.y }, 1000).start();
-
-            this.children.forEach( (child,i) => {
-                child.setLayout(layout.children[i]);
-            });    
         }
         
+        this.children.forEach( (child,i) => {
+            child.setLayout(layout.children[i]);
+        });    
+
     }      
     
     click(context: CanvasRenderingContext2D, coords: Point){

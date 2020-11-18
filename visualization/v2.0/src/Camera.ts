@@ -130,21 +130,11 @@ export default class Camera {
         return this.viewport.left <= p.x && p.x <= this.viewport.right && 
         this.viewport.top <= p.y &&  p.y <= this.viewport.bottom;
     }
-
+    
     isVisible (c : Component) : Boolean {
-        let topLeft     = {x:c.boundingBox.left, y:c.boundingBox.top};
-        let topRight    = {x:c.boundingBox.left + c.boundingBox.width, y:c.boundingBox.top};
-        let bottomLeft  = {x:c.boundingBox.left, y:c.boundingBox.top + c.boundingBox.height};
-        let bottomRight = {x:c.boundingBox.left + c.boundingBox.width, 
-                           y:c.boundingBox.top+ c.boundingBox.height};
-
-        return  this.isScreenPointInCamera(topLeft) ||
-                this.isScreenPointInCamera(topRight) ||
-                this.isScreenPointInCamera(bottomLeft) ||
-                this.isScreenPointInCamera(bottomRight) ||
-                (c.boundingBox.left <= this.viewport.left &&
-                c.boundingBox.left + c.boundingBox.width >= this.viewport.right &&
-                c.boundingBox.top <= this.viewport.top &&
-                c.boundingBox.top + c.boundingBox.height >= this.viewport.bottom)
+        return !(c.boundingBox.left > this.viewport.right
+            || c.boundingBox.left + c.boundingBox.width < this.viewport.left
+            || c.boundingBox.top > this.viewport.bottom
+            || c.boundingBox.top + c.boundingBox.height < this.viewport.top);
     }   
 };
