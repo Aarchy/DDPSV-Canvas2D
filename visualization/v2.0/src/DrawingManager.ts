@@ -6,6 +6,7 @@ import TWEEN from '@tweenjs/tween.js'
 import { flextree } from "d3-flextree";
 import Stats from "../node_modules/stats.js/src/Stats.js";
 //import { createWorker } from '../node_modules/typed-web-workers/lib/index.esm.js'
+import LayoutWorker from "worker-loader!./LayoutWorker";
 
 var stats = new Stats();
 stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -32,7 +33,7 @@ export default class DrawingManager {
     private _layoutCounter: number;
     private _isLayoutHorizontal: boolean;
     private _root: Component;
-    private _worker: any;
+    private _worker: LayoutWorker;
     
     constructor(){
         this._canvas = document.createElement("canvas");
@@ -41,12 +42,18 @@ export default class DrawingManager {
         this._context = this._canvas.getContext("2d")!;
         this._camera = new Camera(this._context);
         this._layoutCounter = 0;
+        this._worker = new LayoutWorker();
+        this._worker.onmessage = (event) => {
+            const newTree = event.data.tree;
+            this._root.setLayout(newTree);
+        };
+        
         // const tree = new TNode(new Rectangle(100, 100));
         // tree.addChild(new TNode(new Rectangle(50, 50)));
         // const tree2 = new TNode(new Rectangle(25, 50));
         // tree.addChild(tree2);
         // tree2.addChild(new TNode(new Rectangle(50, 50)));
-        this._root = TreeGenerator.generateTree(1);
+        this._root = TreeGenerator.generateTree(16);
         this._isLayoutHorizontal = true;
         // this._worker = createWorker({
         //     workerFunction: ({input, callback}) => {
@@ -81,18 +88,18 @@ export default class DrawingManager {
     }
     
     updateLayout() {
-        //printDelayed(this._root);
-        const flextreeLayout = flextree({ spacing: 10});
+        this._worker.postMessage ({rootLayout: this._root.getLayout()});
 
-        const rootLayout = this._root.getLayout(); 
+        // const flextreeLayout = flextree({ spacing: 10});
 
-        if (this._isLayoutHorizontal) { this.flipLayout1(rootLayout); }
-       // this._worker.postMessage({flextree: flextree, rootLayout: rootLayout});
-        const tree = flextreeLayout.hierarchy(rootLayout);  
-        flextreeLayout(tree);
-        if (this._isLayoutHorizontal) { this.flipLayout(tree); }           
+        // const rootLayout = this._root.getLayout(); 
+
+        // if (this._isLayoutHorizontal) { this.flipLayout1(rootLayout); }
+        // const tree = flextreeLayout.hierarchy(rootLayout);  
+        // flextreeLayout(tree);
+        // if (this._isLayoutHorizontal) { this.flipLayout(tree); }           
     
-        this._root.setLayout(tree);
+        // this._root.setLayout(tree);
     }
 
     update() {
