@@ -3,6 +3,8 @@ import Point from './Point';
 import { EventDispatcher, IEvent } from "../node_modules/strongly-typed-events/dist/index";
 import BoundingBox from './BoundingBox';
 
+import NodeCache from './NodeCache';
+
 export default class ProgressCircle extends Component {
     private _position: Point = {x:0, y:0};
     private _radius: number;
@@ -83,81 +85,97 @@ export default class ProgressCircle extends Component {
     }
     
     drawThis (context: CanvasRenderingContext2D, drawSimple: Boolean = false): void {
-        context.beginPath();
-        //context.arc(this._position.x, this._position.y, this._radius, 0, 2 * Math.PI)
-        context.arc(this._radius, this._radius, this._radius, 0, 2 * Math.PI)
-        context.stroke();
+        const oldStroke = context.strokeStyle;
+        const oldWidth = context.lineWidth;
+        const oldTextStyle = context.font; 
 
-        context.beginPath();
-        //context.arc(this._position.x, this._position.y, this._radius - 10, 0, 2 * Math.PI) // todo: replace -10 constant 
-        context.arc(this._radius, this._radius, this._radius - 10, 0, 2 * Math.PI) // todo: replace -10 constant 
-        context.stroke();
-
-        context.beginPath();
-        let oldStroke = context.strokeStyle;
-        let oldWidth = context.lineWidth;
-        let oldTextStyle = context.font; 
-
-        if (this.progress < 0.35){
-            context.strokeStyle = 'red';
-        } else if (this.progress < 0.7) {
-            context.strokeStyle = 'orange';
-        } else {
-            context.strokeStyle = 'green';
-        }
-        context.lineWidth = 10 - oldWidth;
-        context.arc(this._radius, this._radius, this._radius - 5, 0, this._progress * 2 * Math.PI)
-        context.stroke();
-
-        context.font = '10px sans-serif';
-        let _firstTextMetrics = context.measureText(this._firstText);
-        let _secondTextMetrics = context.measureText(this._secondText);
-        let _thirdTextMetrics = context.measureText(this._thirdText);
         if (drawSimple) {
-            let savedFillStyle = context.fillStyle;
-            context.fillStyle = 'lightblue';
+            const offScreenCanvas = NodeCache.getProgressCircle();
+            context.drawImage(offScreenCanvas, 0, 0);
+            context.beginPath();
+            if (this.progress < 0.35){
+                context.strokeStyle = 'red';
+            } else if (this.progress < 0.7) {
+                context.strokeStyle = 'orange';
+            } else {
+                context.strokeStyle = 'green';
+            }
+            context.lineWidth = 9;
+            context.arc(this._radius, this._radius, this._radius - 5, 0, this._progress * 2 * Math.PI)
+            context.stroke();
 
-            context.fillRect(
-                this._radius - (_firstTextMetrics.width / 2.0), 
-                this._radius - 18 - _firstTextMetrics.actualBoundingBoxAscent,
-                _firstTextMetrics.width,
-                _firstTextMetrics.actualBoundingBoxAscent + _firstTextMetrics.actualBoundingBoxDescent
-            );
-
-            context.fillRect(
-                this._radius - (_secondTextMetrics.width / 2.0), 
-                this._radius - _secondTextMetrics.actualBoundingBoxAscent,
-                _secondTextMetrics.width,
-                _secondTextMetrics.actualBoundingBoxAscent + _secondTextMetrics.actualBoundingBoxDescent
-            );
-
-            context.fillRect(
-                this._radius - (_thirdTextMetrics.width / 2.0), 
-                this._radius + 18 - _thirdTextMetrics.actualBoundingBoxAscent,
-                _thirdTextMetrics.width,
-                _thirdTextMetrics.actualBoundingBoxAscent + _thirdTextMetrics.actualBoundingBoxDescent
-            );
-
-            context.fillStyle = savedFillStyle;
         } else {
-            context.fillText(
-                this._firstText, 
-                this._radius - (_firstTextMetrics.width / 2.0), 
-                this._radius - 18
-            );
+            context.beginPath();
+            //context.arc(this._position.x, this._position.y, this._radius, 0, 2 * Math.PI)
+            context.arc(this._radius, this._radius, this._radius, 0, 2 * Math.PI)
+            context.stroke();
 
-            context.fillText(
-                this._secondText, 
-                this._radius - (_secondTextMetrics.width / 2.0), 
-                this._radius
-            );
+            context.beginPath();
+            //context.arc(this._position.x, this._position.y, this._radius - 10, 0, 2 * Math.PI) // todo: replace -10 constant 
+            context.arc(this._radius, this._radius, this._radius - 10, 0, 2 * Math.PI) // todo: replace -10 constant 
+            context.stroke();
 
-            context.fillText(this._thirdText, 
-                this._radius - (_thirdTextMetrics.width / 2.0), 
-                this._radius + 18
-            );
+            context.beginPath();
+            if (this.progress < 0.35){
+                context.strokeStyle = 'red';
+            } else if (this.progress < 0.7) {
+                context.strokeStyle = 'orange';
+            } else {
+                context.strokeStyle = 'green';
+            }
+            context.lineWidth = 10 - oldWidth;
+            context.arc(this._radius, this._radius, this._radius - 5, 0, this._progress * 2 * Math.PI)
+            context.stroke();
+
+            context.font = '10px sans-serif';
+            const _firstTextMetrics = context.measureText(this._firstText);
+            const _secondTextMetrics = context.measureText(this._secondText);
+            const _thirdTextMetrics = context.measureText(this._thirdText);
+            if (drawSimple) {
+                const savedFillStyle = context.fillStyle;
+                context.fillStyle = 'lightblue';
+
+                context.fillRect(
+                    this._radius - (_firstTextMetrics.width / 2.0), 
+                    this._radius - 18 - _firstTextMetrics.actualBoundingBoxAscent,
+                    _firstTextMetrics.width,
+                    _firstTextMetrics.actualBoundingBoxAscent + _firstTextMetrics.actualBoundingBoxDescent
+                );
+
+                context.fillRect(
+                    this._radius - (_secondTextMetrics.width / 2.0), 
+                    this._radius - _secondTextMetrics.actualBoundingBoxAscent,
+                    _secondTextMetrics.width,
+                    _secondTextMetrics.actualBoundingBoxAscent + _secondTextMetrics.actualBoundingBoxDescent
+                );
+
+                context.fillRect(
+                    this._radius - (_thirdTextMetrics.width / 2.0), 
+                    this._radius + 18 - _thirdTextMetrics.actualBoundingBoxAscent,
+                    _thirdTextMetrics.width,
+                    _thirdTextMetrics.actualBoundingBoxAscent + _thirdTextMetrics.actualBoundingBoxDescent
+                );
+
+                context.fillStyle = savedFillStyle;
+            } else {
+                context.fillText(
+                    this._firstText, 
+                    this._radius - (_firstTextMetrics.width / 2.0), 
+                    this._radius - 18
+                );
+
+                context.fillText(
+                    this._secondText, 
+                    this._radius - (_secondTextMetrics.width / 2.0), 
+                    this._radius
+                );
+
+                context.fillText(this._thirdText, 
+                    this._radius - (_thirdTextMetrics.width / 2.0), 
+                    this._radius + 18
+                );
+            }
         }
-
         context.strokeStyle = oldStroke;
         context.lineWidth = oldWidth;
         context.font = oldTextStyle;

@@ -1,79 +1,27 @@
-import Component from './Component'
-import Point from './Point';
-import { EventDispatcher, IEvent } from "../node_modules/strongly-typed-events/dist/index";
-import BoundingBox from './BoundingBox';
-import NodeCache from './NodeCache';
+import ProgressCircle from "./ProgressCircle";
 
-export default class DetailedNode extends Component {
-    private _position: Point = {x:0, y:0};
-    private _path: Path2D;
-    private _boundingBox: BoundingBox;
+export default abstract class NodeCache {
+	private static roundedRects = {};
+	private static progressCircle: OffscreenCanvas | null  = null;
+	private static detailedNode: OffscreenCanvas | null  = null;
 
-    constructor (width: number, height: number) {     
-        super();
-        this._onClick = new EventDispatcher<DetailedNode>();
-        this._boundingBox = {
-            left: this._position.x,
-            top: this._position.y,
-            width: width,
-            height: height
-        };
-
-        this._path = new Path2D;
-		this._path.rect(this._position.x, this._position.y, width, height);
-	}   
-
-	get left() : number {
-        return this._boundingBox.left;
-    }
-    set left(value: number) {
-        this._position.x = value;
-        this.updateBoundingBox();
-        this.updatePath();
-    }
-
-    get top() : number {
-        return this._boundingBox.top;
-    }
-    set top(value: number) {
-        this._position.y = value;
-        this.updateBoundingBox();
-        this.updatePath();
-    }
-
-    get boundingBox(): BoundingBox {
-        return this._boundingBox;
-    }
-
-    get onClick(): IEvent<DetailedNode> {
-        return this._onClick.asEvent();
-    }
-
-    updatePath (): void {
-        this._path = new Path2D;
-		this._path.rect(this._position.x, this._position.y, this._boundingBox.width, this._boundingBox.height);
-    }
-    
-    updateBoundingBox(): void {
-        this._boundingBox.left  = this._position.x;
-        this._boundingBox.top   = this._position.y;
-    }
-    
-    drawThis (context: CanvasRenderingContext2D, drawSimple: Boolean = false): void {
-		if(drawSimple){
-            const offScreenCanvas = NodeCache.getDetailedNode();
-            context.drawImage(offScreenCanvas, 0, 0);
-        } else {
+	static getDetailedNode () {
+		if (this.detailedNode != null) {
+			return this.detailedNode;
+		} else {
+			this.detailedNode = new OffscreenCanvas(250, 250);
+			const context = this.detailedNode.getContext("2d")!;
+			context.translate(10, 0);
 			context.lineWidth = 4;
 			context.lineJoin = 'round';
 			context.strokeStyle = 'gray';
-			context.strokeRect (0, 0, this.boundingBox.width, this.boundingBox.height);
+			context.strokeRect (0, 0, 200, 200);
 
 			//Draw little rects
 			context.lineJoin = 'miter';
 			context.lineWidth = 2;
-			let littleRectHeight = this.boundingBox.height / 8;
-			let littleRectWidth = this.boundingBox.width / 6;
+			let littleRectHeight = 200 / 8;
+			let littleRectWidth = 200 / 6;
 			for(let i = 0; i < 5; ++i) {
 				context.strokeRect (0, i * littleRectHeight, littleRectWidth, littleRectHeight);
 				context.strokeRect (5 * littleRectWidth, i * littleRectHeight, littleRectWidth, littleRectHeight);
@@ -81,18 +29,18 @@ export default class DetailedNode extends Component {
 
 			//Draw wide rects
 			context.fillStyle = 'darkred';
-			context.fillRect (0, 5* littleRectHeight, this.boundingBox.width, 3 * littleRectHeight);
+			context.fillRect (0, 5* littleRectHeight, 200, 3 * littleRectHeight);
 			context.fillStyle = 'lightgray';
 			context.strokeStyle = 'lightgray';
 			context.lineJoin = 'round';
 			for(let i = 0; i < 3; ++i) {
-				context.strokeRect (3, (5 + i) * littleRectHeight + 3, this.boundingBox.width - 6, littleRectHeight - 6);
-				context.fillRect (3, (5 + i) * littleRectHeight + 3, this.boundingBox.width - 6, littleRectHeight - 6);
+				context.strokeRect (3, (5 + i) * littleRectHeight + 3, 200 - 6, littleRectHeight - 6);
+				context.fillRect (3, (5 + i) * littleRectHeight + 3, 200 - 6, littleRectHeight - 6);
 			}
 
 			//Draw middle rect
 			context.fillStyle = 'lightblue';
-			context.fillRect (littleRectWidth + 1, 2, this.boundingBox.width - 2 * littleRectWidth - 2, 5 * littleRectHeight - 2);
+			context.fillRect (littleRectWidth + 1, 2, 200 - 2 * littleRectWidth - 2, 5 * littleRectHeight - 2);
 
 			//Draw circles
 			context.strokeStyle = 'black';
@@ -101,7 +49,7 @@ export default class DetailedNode extends Component {
 				context.arc (-4, (i+1) * littleRectHeight - littleRectHeight / 2, 2, 0, 2 * Math.PI);
 				context.stroke();
 				context.beginPath();
-				context.arc (this.boundingBox.width + 4, (i+1) * littleRectHeight - littleRectHeight / 2, 2, 0, 2 * Math.PI);
+				context.arc (200 + 4, (i+1) * littleRectHeight - littleRectHeight / 2, 2, 0, 2 * Math.PI);
 				context.stroke();
 			}
 
@@ -113,9 +61,9 @@ export default class DetailedNode extends Component {
 			context.fillRect (0, littleRectHeight / 2, littleRectWidth, littleRectHeight / 2);
 
 			context.fillStyle = 'green';
-			context.fillRect (this.boundingBox.width - littleRectWidth, 0, littleRectWidth, littleRectHeight / 2);
+			context.fillRect (200 - littleRectWidth, 0, littleRectWidth, littleRectHeight / 2);
 			context.fillStyle = 'lightgreen';
-			context.fillRect (this.boundingBox.width - littleRectWidth, littleRectHeight / 2, littleRectWidth, littleRectHeight / 2);
+			context.fillRect (200 - littleRectWidth, littleRectHeight / 2, littleRectWidth, littleRectHeight / 2);
 		
 			context.fillStyle = 'white';
 			context.font = '8px sans-serif';
@@ -268,14 +216,110 @@ export default class DetailedNode extends Component {
 					context.fillRect( 1.5 * littleRectWidth + (i * diagramRectWidth), 2.5 * littleRectHeight - diagramRectHeight, diagramRectWidth, diagramRectHeight);
 				}
 			}
+			return this.detailedNode;
 		}
 	}
 
-    isInPath (context: CanvasRenderingContext2D, p: Point): boolean {
-        if (context.isPointInPath(this._path, p.x, p.y)){
-            return true;
-        }
-        return false;
-    }
+	static getProgressCircle () {
+		if (this.progressCircle != null) {
+			return this.progressCircle;
+		} else {
+			this.progressCircle = new OffscreenCanvas(100, 100);
+			const context = this.progressCircle.getContext("2d")!;
+
+			context.beginPath();
+			context.arc(40, 40, 40, 0, 2 * Math.PI)
+			context.stroke();
+	
+			context.beginPath();
+			context.arc(40, 40, 40 - 10, 0, 2 * Math.PI) // todo: replace -10 constant 
+			context.stroke();
+		
+			const firstText = "20";
+			const secondText = "count";
+			const thirdText = "Cha 90";
+			context.font = '10px sans-serif';
+			const _firstTextMetrics = context.measureText(firstText);
+			const _secondTextMetrics = context.measureText(secondText);
+			const _thirdTextMetrics = context.measureText(thirdText);
+			context.fillText(
+				firstText, 
+				40 - (_firstTextMetrics.width / 2.0), 
+				40 - 18
+			);
+
+			context.fillText(
+				secondText, 
+				40 - (_secondTextMetrics.width / 2.0), 
+				40
+			);
+
+			context.fillText(thirdText, 
+				40 - (_thirdTextMetrics.width / 2.0), 
+				40 + 18
+			);
+			return this.progressCircle;
+		}		
+	}
+
+	static getRoundedRects (stageNum: number) {
+		if (this.roundedRects[stageNum] != null) {
+			return this.roundedRects[stageNum];
+		} else {
+			this.roundedRects[stageNum] = new OffscreenCanvas(205, 85);
+			const context = this.roundedRects[stageNum].getContext("2d")!;
+			const stages : Array<string> 	= []
+			for (let i = 0; i < stageNum; ++i) {
+				stages.push("Stage" + i.toString());
+			}
+
+			const radius : number = 80 / 2;
+	
+			context.font = '10px sans-serif';
+			const unitWidth : number = 200 / 13;
+			const topPos : number = 80 / 3;
+			stages.forEach((stage,i) => {
+				const left = ((1 + i * 4) * unitWidth);
+				context.strokeRect(left, topPos, 3 * unitWidth, topPos);
+				context.fillText(stage, 
+					left + (3 * unitWidth / 5), 
+					5 * topPos / 3
+				);
+			})
+			return this.roundedRects[stageNum];
+
+
+			// if(visibleWidth < 1.0) {
+			// 	const region = new Path2D();
+			// 	region.arc(
+			// 		boundingBox.width - radius, 
+			// 		radius, 
+			// 		radius,  
+			// 		3 * Math.PI / 2,  Math.PI / 2);    
+			// 	region.lineTo(
+			// 		origWidth,
+			// 		boundingBox.height)
+			// 	region.lineTo(
+			// 		origWidth,
+			// 		0)
+			// 	region.lineTo(
+			// 		boundingBox.width - radius,
+			// 		0)
+			// 	region.closePath();
+	
+			// 	context.fillStyle = 'white';
+			// 	context.fill(region, 'evenodd');
+			// }
+	
+			// context.beginPath();
+			// context.arc(radius, radius, radius, Math.PI / 2,  3 * Math.PI / 2);
+			// context.arc(boundingBox.width - radius, radius, radius,  3 * Math.PI / 2,  Math.PI / 2);
+			// context.lineTo(radius, boundingBox.height);
+			// context.stroke();	
+		}
+	}
+
+
+	
 
 }

@@ -42,7 +42,7 @@ const generateProgCircle = () : ProgressCircle => {
 }        
 
 export default class TreeGenerator {
-    private static generators: Array<Function> = [generateProgCircle, generateRoundedRectangle]; //, generateDetailedNode
+    private static generators: Array<Function> = [generateProgCircle, generateRoundedRectangle, generateDetailedNode]; //, generateDetailedNode
 
     public static generateTree(depth: number) : Component {
         const root : Component = this.generateRandomComponent();

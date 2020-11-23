@@ -26,14 +26,14 @@ export default abstract class Component {
         if(camera.isVisible(this)) {
             context.save();
             context.translate(this.left, this.top);
-            this.drawThis(context, camera.distance > 1000);
+            this.drawThis(context, camera.distance > 2000);
             context.restore();
         }
-        this._connectors.forEach(connector => connector.draw(context));
-
         this.children.forEach( child => {
             child.draw(context, camera);
         });
+        this._connectors.forEach(connector => connector.draw(context));
+
     }
     
     addChild (newChild: Component) : void {
